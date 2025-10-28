@@ -16,9 +16,9 @@ class QuizCard extends StatelessWidget {
         isThreeLine: true,
         trailing: IconButton(
           icon: const Icon(Icons.play_arrow),
-          onPressed: () => context.go('/quiz/${quiz.id}/play'),
+          onPressed: () => context.push('/quiz/${quiz.id}/play'),
         ),
-        onTap: () => context.go('/quiz/${quiz.id}'),
+        onTap: () => context.push('/quiz/${quiz.id}'),
       ),
     );
   }

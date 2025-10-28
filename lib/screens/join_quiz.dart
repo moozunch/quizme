@@ -21,7 +21,7 @@ class _JoinQuizScreenState extends State<JoinQuizScreen> {
   void _join() {
     final code = _codeCtrl.text.trim();
     if (code.isEmpty) return;
-    context.go('/quiz/$code/play');
+    context.push('/quiz/$code/play');
   }
 
   @override

@@ -28,13 +28,13 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             ElevatedButton.icon(
-              onPressed: () => context.go('/create'),
+              onPressed: () => context.push('/create'),
               icon: const Icon(Icons.create),
               label: const Text('Create Quiz'),
             ),
             const SizedBox(height: 8),
             ElevatedButton.icon(
-              onPressed: () => context.go('/join'),
+              onPressed: () => context.push('/join'),
               icon: const Icon(Icons.login),
               label: const Text('Join Quiz'),
             ),

@@ -43,7 +43,7 @@ class QuizDetailScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Questions: ${quiz.questions.length}'),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: () => context.go('/quiz/${quiz.id}/play'), child: const Text('Start Quiz')),
+            ElevatedButton(onPressed: () => context.push('/quiz/${quiz.id}/play'), child: const Text('Start Quiz')),
             const SizedBox(height: 12),
             const Text('Preview:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
