@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/app_state.dart';
+import '../widgets/theme_toggle_action.dart';
 
 class QuizPlayScreen extends StatefulWidget {
   final String quizId;
@@ -40,7 +41,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
 
     final q = quiz.questions[_index];
     return Scaffold(
-      appBar: AppBar(title: Text(quiz.title)),
+      appBar: AppBar(title: Text(quiz.title), actions: const [ThemeToggleAction()]),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../provider/app_state.dart';
 import '../models/question.dart';
+import '../widgets/theme_toggle_action.dart';
 
 class CreateQuizScreen extends StatefulWidget {
   const CreateQuizScreen({super.key});
@@ -53,7 +54,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Quiz')),
+      appBar: AppBar(title: const Text('Create Quiz'), actions: const [ThemeToggleAction()]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
         child: Column(

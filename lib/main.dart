@@ -40,13 +40,24 @@ class MyApp extends StatelessWidget {
 
     return ChangeNotifierProvider.value(
       value: appState,
-      child: MaterialApp.router(
-        title: 'QuizMe',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        routerConfig: router,
+      child: Consumer<AppState>(
+        builder: (context, state, _) {
+          return MaterialApp.router(
+            title: 'QuizMe',
+            theme: ThemeData(
+              brightness: Brightness.light,
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              useMaterial3: true,
+            ),
+            darkTheme: ThemeData(
+              brightness: Brightness.dark,
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
+              useMaterial3: true,
+            ),
+            themeMode: state.themeMode,
+            routerConfig: router,
+          );
+        },
       ),
     );
   }

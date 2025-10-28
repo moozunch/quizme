@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../provider/app_state.dart';
 import '../widgets/quiz_card.dart';
+import '../widgets/theme_toggle_action.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,7 +13,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
     return Scaffold(
-      appBar: AppBar(title: const Text('QuizMe')),
+      appBar: AppBar(title: const Text('QuizMe'), actions: const [ThemeToggleAction()]),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -39,15 +40,31 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Expanded(
-              child: appState.quizzes.isEmpty
-                  ? const Center(child: Text('No quizzes yet. Create one!'))
-                  : ListView.builder(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (appState.quizzes.isEmpty) {
+                    return const Center(child: Text('No quizzes yet. Create one!'));
+                  }
+                  final isWide = constraints.maxWidth >= 600;
+                  if (isWide) {
+                    final crossCount = constraints.maxWidth >= 900 ? 3 : 2;
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossCount,
+                        childAspectRatio: 3.2,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                      ),
                       itemCount: appState.quizzes.length,
-                      itemBuilder: (context, i) {
-                        final q = appState.quizzes[i];
-                        return QuizCard(quiz: q);
-                      },
-                    ),
+                      itemBuilder: (context, i) => QuizCard(quiz: appState.quizzes[i]),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: appState.quizzes.length,
+                    itemBuilder: (context, i) => QuizCard(quiz: appState.quizzes[i]),
+                  );
+                },
+              ),
             ),
           ],
         ),

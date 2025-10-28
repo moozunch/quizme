@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/quiz.dart';
@@ -8,10 +9,13 @@ import '../models/question.dart';
 
 class AppState extends ChangeNotifier {
   static const _kQuizzesKey = 'quizzes_v1';
+  static const _kThemeModeKey = 'theme_mode_v1';
 
   final List<Quiz> _quizzes = [];
+  ThemeMode _themeMode = ThemeMode.system;
 
   List<Quiz> get quizzes => List.unmodifiable(_quizzes);
+  ThemeMode get themeMode => _themeMode;
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -25,6 +29,12 @@ class AppState extends ChangeNotifier {
       } catch (e) {
         if (kDebugMode) print('Failed to decode quizzes: $e');
       }
+    }
+
+    // Load theme mode
+    final themeIndex = prefs.getInt(_kThemeModeKey);
+    if (themeIndex != null && themeIndex >= 0 && themeIndex < ThemeMode.values.length) {
+      _themeMode = ThemeMode.values[themeIndex];
     }
 
     // Seed demo data if empty
@@ -87,5 +97,20 @@ class AppState extends ChangeNotifier {
       ],
     );
     _quizzes.add(demo);
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    _themeMode = mode;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_kThemeModeKey, mode.index);
+    notifyListeners();
+  }
+
+  Future<void> toggleTheme() async {
+    if (_themeMode == ThemeMode.dark) {
+      await setThemeMode(ThemeMode.light);
+    } else {
+      await setThemeMode(ThemeMode.dark);
+    }
   }
 }
