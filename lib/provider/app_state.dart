@@ -128,4 +128,15 @@ class AppState extends ChangeNotifier {
     final quiz = getById(quizId);
     return quiz?.attempts.toList(growable: false) ?? const [];
   }
+
+  Future<bool> removeQuiz(String id) async {
+    final before = _quizzes.length;
+    _quizzes.removeWhere((q) => q.id == id);
+    final changed = _quizzes.length != before;
+    if (changed) {
+      await _save();
+      notifyListeners();
+    }
+    return changed;
+  }
 }

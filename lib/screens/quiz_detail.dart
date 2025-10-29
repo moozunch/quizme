@@ -31,6 +31,27 @@ class QuizDetailScreen extends StatelessWidget {
               }
             },
           ),
+          IconButton(
+            tooltip: 'Delete',
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () async {
+              final ok = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Delete quiz?'),
+                  content: const Text('Tindakan ini tidak dapat dibatalkan.'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                    FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+                  ],
+                ),
+              );
+              if (ok == true && context.mounted) {
+                await context.read<AppState>().removeQuiz(quiz.id);
+                if (context.mounted) context.pop();
+              }
+            },
+          ),
           const ThemeToggleAction(),
         ],
       ),

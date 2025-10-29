@@ -55,6 +55,27 @@ class QuizCreatedScreen extends StatelessWidget {
                 icon: const Icon(Icons.play_arrow),
                 label: const Text('Try Play'),
               ),
+              OutlinedButton.icon(
+                onPressed: () async {
+                  final ok = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Delete quiz?'),
+                      content: const Text('Tindakan ini tidak dapat dibatalkan.'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                        FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+                      ],
+                    ),
+                  );
+                  if (ok == true && context.mounted) {
+                    await context.read<AppState>().removeQuiz(quiz.id);
+                    if (context.mounted) context.go('/');
+                  }
+                },
+                icon: const Icon(Icons.delete_outline),
+                label: const Text('Delete'),
+              ),
             ]),
             const SizedBox(height: 16),
             Text('Yang sudah mengerjakan', style: Theme.of(context).textTheme.titleMedium),
