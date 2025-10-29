@@ -46,9 +46,9 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
   Future<void> _saveQuiz() async {
     final title = _titleCtrl.text.trim();
     if (title.isEmpty || _questions.isEmpty) return;
-    await context.read<AppState>().addQuiz(title, _questions);
+    final id = await context.read<AppState>().addQuiz(title, _questions);
     if (!mounted) return;
-    context.go('/');
+    context.push('/quiz/$id/created');
   }
 
   @override

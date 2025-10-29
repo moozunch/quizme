@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/quiz.dart';
 import '../models/question.dart';
+import '../models/attempt.dart';
 
 class AppState extends ChangeNotifier {
   static const _kQuizzesKey = 'quizzes_v1';
@@ -51,11 +52,12 @@ class AppState extends ChangeNotifier {
     await prefs.setString(_kQuizzesKey, raw);
   }
 
-  Future<void> addQuiz(String title, List<Question> questions) async {
+  Future<String> addQuiz(String title, List<Question> questions) async {
     final quiz = Quiz.create(title: title, questions: questions);
     _quizzes.add(quiz);
     await _save();
     notifyListeners();
+    return quiz.id;
   }
 
   Quiz? getById(String id) {
@@ -112,5 +114,18 @@ class AppState extends ChangeNotifier {
     } else {
       await setThemeMode(ThemeMode.dark);
     }
+  }
+
+  Future<void> addAttempt(String quizId, Attempt attempt) async {
+    final quiz = getById(quizId);
+    if (quiz == null) return;
+    quiz.attempts.add(attempt);
+    await _save();
+    notifyListeners();
+  }
+
+  List<Attempt> getAttempts(String quizId) {
+    final quiz = getById(quizId);
+    return quiz?.attempts.toList(growable: false) ?? const [];
   }
 }

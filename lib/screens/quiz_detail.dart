@@ -48,12 +48,21 @@ class QuizDetailScreen extends StatelessWidget {
             const Text('Preview:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Expanded(
-              child: ListView.builder(
-                itemCount: quiz.questions.length,
-                itemBuilder: (c, i) => ListTile(
-                  title: Text(quiz.questions[i].text),
-                  subtitle: Text('Options: ${quiz.questions[i].options.join(', ')}'),
-                ),
+              child: ListView(
+                children: [
+                  ...List.generate(quiz.questions.length, (i) => ListTile(
+                        title: Text(quiz.questions[i].text),
+                        subtitle: Text('Options: ${quiz.questions[i].options.join(', ')}'),
+                      )),
+                  const SizedBox(height: 12),
+                  const Divider(),
+                  const Text('Attempts', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ...quiz.attempts.map((a) => ListTile(
+                        title: Text(a.name),
+                        subtitle: Text('${a.score}/${a.total}'),
+                        trailing: Text('${a.submittedAt.hour.toString().padLeft(2, '0')}:${a.submittedAt.minute.toString().padLeft(2, '0')}'),
+                      )),
+                ],
               ),
             ),
           ],

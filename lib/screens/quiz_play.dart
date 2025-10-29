@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/app_state.dart';
+import '../models/attempt.dart';
 import '../widgets/theme_toggle_action.dart';
 
 class QuizPlayScreen extends StatefulWidget {
   final String quizId;
-  const QuizPlayScreen({super.key, required this.quizId});
+  final String? participantName;
+  const QuizPlayScreen({super.key, required this.quizId, this.participantName});
 
   @override
   State<QuizPlayScreen> createState() => _QuizPlayScreenState();
@@ -67,6 +69,14 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (_index + 1 >= quiz.questions.length) {
+                    // record attempt if name provided
+                    final name = widget.participantName;
+                    if (name != null && name.isNotEmpty) {
+                      context.read<AppState>().addAttempt(
+                            quiz.id,
+                            Attempt(name: name, score: _score, total: quiz.questions.length),
+                          );
+                    }
                     // show result
                     showDialog(
                       context: context,
