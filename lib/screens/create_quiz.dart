@@ -17,7 +17,8 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
   final _titleCtrl = TextEditingController();
   final _qText = TextEditingController();
   final _optCtrls = List.generate(4, (_) => TextEditingController());
-  int _correct = 0;
+  // -1 artinya belum dipilih jawaban benar
+  int _correct = -1;
 
   final List<Question> _questions = [];
 
@@ -32,20 +33,30 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
   void _addQuestion() {
     final text = _qText.text.trim();
     final opts = _optCtrls.map((c) => c.text.trim()).toList();
-    if (text.isEmpty || opts.any((o) => o.isEmpty)) return;
+    if (text.isEmpty || opts.any((o) => o.isEmpty) || _correct < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lengkapi pertanyaan, opsi, dan pilih jawaban benar.')),
+      );
+      return;
+    }
     setState(() {
       _questions.add(Question(text: text, options: opts, correctIndex: _correct));
       _qText.clear();
       for (final c in _optCtrls) {
         c.clear();
       }
-      _correct = 0;
+      _correct = -1;
     });
   }
 
   Future<void> _saveQuiz() async {
     final title = _titleCtrl.text.trim();
-    if (title.isEmpty || _questions.isEmpty) return;
+    if (title.isEmpty || _questions.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Isi judul dan tambahkan minimal 1 pertanyaan.')),
+      );
+      return;
+    }
     final id = await context.read<AppState>().addQuiz(title, _questions);
     if (!mounted) return;
     context.push('/quiz/$id/created');
@@ -64,14 +75,21 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
             const SizedBox(height: 12),
             TextField(controller: _qText, decoration: const InputDecoration(labelText: 'Question text')),
             const SizedBox(height: 8),
+            const Text('Pilih jawaban yang benar:'),
+            const SizedBox(height: 4),
             ...List.generate(4, (i) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  children: [
-                    Radio<int>(value: i, groupValue: _correct, onChanged: (v) => setState(() => _correct = v ?? 0)),
-                    Expanded(child: TextField(controller: _optCtrls[i], decoration: InputDecoration(labelText: 'Option ${i + 1}'))),
-                  ],
+              final letter = String.fromCharCode(65 + i); // A, B, C, D
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                child: RadioListTile<int>(
+                  value: i,
+                  groupValue: _correct,
+                  onChanged: (v) => setState(() => _correct = v ?? -1),
+                  secondary: CircleAvatar(radius: 12, child: Text(letter)),
+                  title: TextField(
+                    controller: _optCtrls[i],
+                    decoration: InputDecoration(labelText: 'Opsi $letter'),
+                  ),
                 ),
               );
             }),
@@ -80,7 +98,13 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
             if (_questions.isNotEmpty) ...[
               const Text('Questions added:', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              ..._questions.map((q) => ListTile(title: Text(q.text), subtitle: Text('Options: ${q.options.length}'))),
+              ..._questions.map((q) {
+                final correctLetter = String.fromCharCode(65 + q.correctIndex);
+                return ListTile(
+                  title: Text(q.text),
+                  subtitle: Text('Benar: $correctLetter. ${q.options[q.correctIndex]}'),
+                );
+              }),
             ],
             const SizedBox(height: 12),
             ElevatedButton(onPressed: _saveQuiz, child: const Text('Save Quiz')),
