@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../provider/app_state.dart';
 import '../widgets/quiz_card.dart';
-import '../widgets/theme_toggle_action.dart';
+import '../widgets/app_scaffold.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,11 +12,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    return Scaffold(
-      appBar: AppBar(title: const Text('QuizMe'), actions: const [ThemeToggleAction()]),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
+    return AppScaffold(
+      titleText: 'QuizMe',
+      body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Card(
@@ -67,7 +65,6 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ],
-        ),
       ),
     );
   }

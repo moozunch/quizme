@@ -9,6 +9,7 @@ import 'screens/join_quiz.dart';
 import 'screens/quiz_detail.dart';
 import 'screens/quiz_play.dart';
 import 'screens/quiz_created.dart';
+import 'screens/quiz_result.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,14 @@ class MyApp extends StatelessWidget {
         GoRoute(path: '/quiz/:id/created', builder: (context, state) {
           final id = state.pathParameters['id']!;
           return QuizCreatedScreen(quizId: id);
+        }),
+        GoRoute(path: '/quiz/:id/result', builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          final extras = state.extra as Map<String, dynamic>?;
+          final score = (extras?['score'] as int?) ?? 0;
+          final total = (extras?['total'] as int?) ?? 0;
+          final name = extras?['name'] as String?;
+          return QuizResultScreen(quizId: id, score: score, total: total, participantName: name);
         }),
       ],
     );

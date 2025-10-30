@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/services.dart';
 
 import '../provider/app_state.dart';
-import '../widgets/theme_toggle_action.dart';
+import '../widgets/app_scaffold.dart';
+import '../widgets/dialogs.dart';
 
 class QuizDetailScreen extends StatelessWidget {
   final String quizId;
@@ -17,47 +17,27 @@ class QuizDetailScreen extends StatelessWidget {
     if (quiz == null) {
       return Scaffold(appBar: AppBar(title: const Text('Quiz not found')), body: const Center(child: Text('Quiz not found')));
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(quiz.title),
-        actions: [
-          IconButton(
-            tooltip: 'Copy ID',
-            icon: const Icon(Icons.copy),
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: quiz.id));
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ID copied')));
-              }
-            },
-          ),
-          IconButton(
-            tooltip: 'Delete',
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () async {
-              final ok = await showDialog<bool>(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: const Text('Delete quiz?'),
-                  content: const Text('Tindakan ini tidak dapat dibatalkan.'),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-                    FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
-                  ],
-                ),
-              );
-              if (ok == true && context.mounted) {
-                await context.read<AppState>().removeQuiz(quiz.id);
-                if (context.mounted) context.pop();
-              }
-            },
-          ),
-          const ThemeToggleAction(),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
+    return AppScaffold(
+      title: Text(quiz.title),
+      actions: [
+        IconButton(
+          tooltip: 'Copy ID',
+          icon: const Icon(Icons.copy),
+          onPressed: () => copyToClipboard(context, quiz.id, snack: 'ID copied'),
+        ),
+        IconButton(
+          tooltip: 'Delete',
+          icon: const Icon(Icons.delete_outline),
+          onPressed: () async {
+            final ok = await showDeleteConfirm(context);
+            if (ok && context.mounted) {
+              await context.read<AppState>().removeQuiz(quiz.id);
+              if (context.mounted) context.pop();
+            }
+          },
+        ),
+      ],
+      body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('ID: ${quiz.id}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
@@ -66,23 +46,8 @@ class QuizDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
-                String name = '';
-                final ok = await showDialog<bool>(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text('Masukkan nama'),
-                    content: TextField(
-                      autofocus: true,
-                      decoration: const InputDecoration(hintText: 'Nama kamu'),
-                      onChanged: (v) => name = v.trim(),
-                    ),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
-                      FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Mulai')),
-                    ],
-                  ),
-                );
-                if (ok == true && name.isNotEmpty && context.mounted) {
+                final name = await showNamePrompt(context);
+                if (name != null && context.mounted) {
                   context.push('/quiz/${quiz.id}/play', extra: name);
                 }
               },
@@ -110,7 +75,6 @@ class QuizDetailScreen extends StatelessWidget {
               ),
             ),
           ],
-        ),
       ),
     );
   }

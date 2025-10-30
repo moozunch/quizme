@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../provider/app_state.dart';
 import '../models/question.dart';
-import '../widgets/theme_toggle_action.dart';
+import '../widgets/app_scaffold.dart';
+import '../widgets/section_title.dart';
 
 class CreateQuizScreen extends StatefulWidget {
   const CreateQuizScreen({super.key});
@@ -64,10 +65,9 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Create Quiz'), actions: const [ThemeToggleAction()]),
+    return AppScaffold(
+      titleText: 'Create Quiz',
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -75,7 +75,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
             const SizedBox(height: 12),
             TextField(controller: _qText, decoration: const InputDecoration(labelText: 'Question text')),
             const SizedBox(height: 8),
-            const Text('Pilih jawaban yang benar:'),
+            const SectionTitle('Pilih jawaban yang benar:'),
             const SizedBox(height: 4),
             ...List.generate(4, (i) {
               final letter = String.fromCharCode(65 + i); // A, B, C, D
@@ -96,7 +96,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
             ElevatedButton.icon(onPressed: _addQuestion, icon: const Icon(Icons.add), label: const Text('Add question')),
             const SizedBox(height: 12),
             if (_questions.isNotEmpty) ...[
-              const Text('Questions added:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SectionTitle('Questions added:'),
               const SizedBox(height: 8),
               ..._questions.map((q) {
                 final correctLetter = String.fromCharCode(65 + q.correctIndex);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../widgets/theme_toggle_action.dart';
+import '../widgets/app_scaffold.dart';
 
 class JoinQuizScreen extends StatefulWidget {
   const JoinQuizScreen({super.key});
@@ -29,11 +29,9 @@ class _JoinQuizScreenState extends State<JoinQuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Join Quiz'), actions: const [ThemeToggleAction()]),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
+    return AppScaffold(
+      titleText: 'Join Quiz',
+      body: Column(
           children: [
             TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Your name')),
             const SizedBox(height: 8),
@@ -41,7 +39,6 @@ class _JoinQuizScreenState extends State<JoinQuizScreen> {
             const SizedBox(height: 12),
             ElevatedButton(onPressed: _join, child: const Text('Join')),
           ],
-        ),
       ),
     );
   }

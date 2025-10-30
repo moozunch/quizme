@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../provider/app_state.dart';
 import '../models/attempt.dart';
-import '../widgets/theme_toggle_action.dart';
+import 'package:go_router/go_router.dart';
+import '../widgets/app_scaffold.dart';
 
 class QuizPlayScreen extends StatefulWidget {
   final String quizId;
@@ -42,11 +43,9 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
     if (quiz == null) return Scaffold(body: Center(child: Text('Quiz not found')));
 
     final q = quiz.questions[_index];
-    return Scaffold(
-      appBar: AppBar(title: Text(quiz.title), actions: const [ThemeToggleAction()]),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
+    return AppScaffold(
+      title: Text(quiz.title),
+      body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('Question ${_index + 1} / ${quiz.questions.length}', style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -67,27 +66,22 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
             const SizedBox(height: 12),
             if (_selected != null)
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_index + 1 >= quiz.questions.length) {
                     // record attempt if name provided
                     final name = widget.participantName;
                     if (name != null && name.isNotEmpty) {
-                      context.read<AppState>().addAttempt(
+                      await context.read<AppState>().addAttempt(
                             quiz.id,
                             Attempt(name: name, score: _score, total: quiz.questions.length),
                           );
                     }
-                    // show result
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text('Finished'),
-                        content: Text('Score: $_score / ${quiz.questions.length}'),
-                        actions: [
-                          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK')),
-                        ],
-                      ),
-                    );
+                    if (!context.mounted) return;
+                    context.push('/quiz/${quiz.id}/result', extra: {
+                      'score': _score,
+                      'total': quiz.questions.length,
+                      'name': name,
+                    });
                   } else {
                     _next(quiz.questions.length);
                   }
@@ -97,7 +91,6 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
             const SizedBox(height: 8),
             Text('Score: $_score', textAlign: TextAlign.right),
           ],
-        ),
       ),
     );
   }
