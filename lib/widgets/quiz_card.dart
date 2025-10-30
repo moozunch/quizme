@@ -12,6 +12,27 @@ class QuizCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _askNameAndStart() async {
+      String name = '';
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Masukkan nama'),
+          content: TextField(
+            autofocus: true,
+            decoration: const InputDecoration(hintText: 'Nama kamu'),
+            onChanged: (v) => name = v.trim(),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Mulai')),
+          ],
+        ),
+      );
+      if (ok == true && name.isNotEmpty && context.mounted) {
+        context.push('/quiz/${quiz.id}/play', extra: name);
+      }
+    }
     return Card(
       child: ListTile(
         title: Text(quiz.title),
@@ -23,7 +44,7 @@ class QuizCard extends StatelessWidget {
             IconButton(
               tooltip: 'Play',
               icon: const Icon(Icons.play_arrow),
-              onPressed: () => context.push('/quiz/${quiz.id}/play'),
+              onPressed: _askNameAndStart,
             ),
             PopupMenuButton<String>(
               onSelected: (value) async {

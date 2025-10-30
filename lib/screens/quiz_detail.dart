@@ -64,7 +64,30 @@ class QuizDetailScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Questions: ${quiz.questions.length}'),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: () => context.push('/quiz/${quiz.id}/play'), child: const Text('Start Quiz')),
+            ElevatedButton(
+              onPressed: () async {
+                String name = '';
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: const Text('Masukkan nama'),
+                    content: TextField(
+                      autofocus: true,
+                      decoration: const InputDecoration(hintText: 'Nama kamu'),
+                      onChanged: (v) => name = v.trim(),
+                    ),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+                      FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Mulai')),
+                    ],
+                  ),
+                );
+                if (ok == true && name.isNotEmpty && context.mounted) {
+                  context.push('/quiz/${quiz.id}/play', extra: name);
+                }
+              },
+              child: const Text('Start Quiz'),
+            ),
             const SizedBox(height: 12),
             const Text('Preview:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
