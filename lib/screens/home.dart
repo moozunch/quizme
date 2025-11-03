@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../provider/app_state.dart';
 import '../widgets/quiz_card.dart';
+import '../widgets/action_card.dart';
 import '../widgets/app_scaffold.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -17,28 +18,39 @@ class HomeScreen extends StatelessWidget {
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Card(
-              color: Colors.amber.shade50,
-              child: const ListTile(
-                leading: Icon(Icons.info_outline),
-                title: Text('Demo quiz tersedia'),
-                subtitle: Text('Coba join dengan kode: QUIZ001'),
-              ),
-            ),
-            SizedBox(
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () => context.push('/create'),
-                child: const Text('Create Quiz'),
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () => context.push('/join'),
-                child: const Text('Join Quiz'),
-              ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final gap = 12.0;
+                final isTwoCol = constraints.maxWidth >= 420;
+                final itemWidth = isTwoCol ? (constraints.maxWidth - gap) / 2 : constraints.maxWidth;
+                return Wrap(
+                  spacing: gap,
+                  runSpacing: gap,
+                  children: [
+                    SizedBox(
+                      width: itemWidth,
+                      child: ActionCard(
+                        title: 'Create Quiz',
+                        badge: 'NEW',
+                        caption: 'Start',
+                        icon: Icons.play_arrow_rounded,
+                        onTap: () => context.push('/create'),
+                        accent: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: ActionCard(
+                        title: 'Join Quiz',
+                        caption: 'Enter code',
+                        icon: Icons.play_arrow_rounded,
+                        onTap: () => context.push('/join'),
+                        accent: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 12),
             Expanded(

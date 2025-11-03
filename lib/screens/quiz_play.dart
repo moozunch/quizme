@@ -5,7 +5,6 @@ import '../provider/app_state.dart';
 import '../models/attempt.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/app_scaffold.dart';
-import '../widgets/section_card.dart';
 import '../styles/tokens.dart';
 
 class QuizPlayScreen extends StatefulWidget {
@@ -53,104 +52,193 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
     if (quiz == null) return Scaffold(body: Center(child: Text('Quiz not found')));
 
     final q = quiz.questions[_index];
+    final scheme = Theme.of(context).colorScheme;
     return AppScaffold(
       title: Text(quiz.title),
-      body: ListView(
-        children: [
-          SectionCard(
-            child: Row(
-              children: [
-                Chip(label: Text('Q ${_index + 1}/${quiz.questions.length}')),
-                const SizedBox(width: AppSpacing.sm),
-                if ((widget.participantName ?? '').isNotEmpty)
-                  Chip(label: Text(widget.participantName!)),
-                const Spacer(),
-                Text('Score: $_score', style: Theme.of(context).textTheme.labelLarge),
-              ],
-            ),
-          ),
-          SectionCard(
-            title: 'Question',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(q.text, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: AppSpacing.sm),
-                ...List.generate(q.options.length, (i) {
-                  final opt = q.options[i];
-                  final isSelected = _selected == i;
-                  final scheme = Theme.of(context).colorScheme;
-                  final bg = isSelected ? scheme.secondaryContainer : scheme.surface;
-                  final fg = isSelected ? scheme.onSecondaryContainer : scheme.onSurface;
-                  final letter = String.fromCharCode(65 + i);
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    decoration: BoxDecoration(
-                      color: bg,
-                      borderRadius: AppRadius.button,
-                      border: Border.all(color: isSelected ? scheme.secondary : scheme.outlineVariant, width: 1.2),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Progress steps + header question
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: scheme.secondaryContainer,
+                  borderRadius: AppRadius.button,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        ...List.generate(quiz.questions.length, (i) => Expanded(
+                              child: Container(
+                                height: 6,
+                                margin: EdgeInsets.only(right: i == quiz.questions.length - 1 ? 0 : 6),
+                                decoration: BoxDecoration(
+                                  color: i <= _index ? scheme.onSecondaryContainer.withValues(alpha: 0.9) : scheme.onSecondaryContainer.withValues(alpha: 0.3),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                              ),
+                            )),
+                      ],
                     ),
-                    child: InkWell(
-                      borderRadius: AppRadius.button,
-                      onTap: _selected == null ? () => _submitAnswer(i, q.correctIndex) : null,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 14,
-                              backgroundColor: isSelected ? scheme.secondary : scheme.surface,
-                              child: Text(letter, style: TextStyle(color: isSelected ? scheme.onSecondary : scheme.onSurface)),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(opt, style: TextStyle(color: fg, fontWeight: FontWeight.w600)),
-                            ),
-                          ],
+                    const SizedBox(height: AppSpacing.lg),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 180),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                          child: Text(
+                            q.text,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: scheme.onSecondaryContainer,
+                                ),
+                          ),
                         ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              // Options grid (2 columns)
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final gap = 12.0;
+                  final itemWidth = (constraints.maxWidth - gap) / 2;
+                  return Wrap(
+                    spacing: gap,
+                    runSpacing: gap,
+                    children: List.generate(q.options.length, (i) {
+                      final opt = q.options[i];
+                      final isSelected = _selected == i;
+                      return SizedBox(
+                        width: itemWidth,
+                        child: _OptionTile(
+                          label: opt,
+                          selected: isSelected,
+                          onTap: _selected == null ? () => _submitAnswer(i, q.correctIndex) : null,
+                        ),
+                      );
+                    }),
                   );
-                }),
-                const SizedBox(height: AppSpacing.md),
-                if (_selected != null)
-                  Row(
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: _prev,
-                        icon: const Icon(Icons.arrow_back),
-                        label: const Text('Previous'),
+                },
+              ),
+              const SizedBox(height: AppSpacing.md),
+              if (_selected != null)
+                Row(
+                  children: [
+                    OutlinedButton(
+                      onPressed: _prev,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.arrow_back_rounded, color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 8),
+                          const Text('Previous'),
+                        ],
                       ),
-                      const Spacer(),
-                      ElevatedButton.icon(
-                        onPressed: () async {
-                          if (_index + 1 >= quiz.questions.length) {
-                            final name = widget.participantName;
-                            if (name != null && name.isNotEmpty) {
-                              await context.read<AppState>().addAttempt(
-                                    quiz.id,
-                                    Attempt(name: name, score: _score, total: quiz.questions.length),
-                                  );
-                            }
-                            if (!context.mounted) return;
-                            context.push('/quiz/${quiz.id}/result', extra: {
-                              'score': _score,
-                              'total': quiz.questions.length,
-                              'name': name,
-                            });
-                          } else {
-                            _next(quiz.questions.length);
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_index + 1 >= quiz.questions.length) {
+                          final name = widget.participantName;
+                          if (name != null && name.isNotEmpty) {
+                            await context.read<AppState>().addAttempt(
+                                  quiz.id,
+                                  Attempt(name: name, score: _score, total: quiz.questions.length),
+                                );
                           }
-                        },
-                        icon: Icon(_index + 1 >= quiz.questions.length ? Icons.check : Icons.arrow_forward),
-                        label: Text(_index + 1 >= quiz.questions.length ? 'Finish' : 'Next'),
+                          if (!context.mounted) return;
+                          context.push('/quiz/${quiz.id}/result', extra: {
+                            'score': _score,
+                            'total': quiz.questions.length,
+                            'name': name,
+                          });
+                        } else {
+                          _next(quiz.questions.length);
+                        }
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(_index + 1 >= quiz.questions.length ? 'Finish' : 'Next'),
+                          const SizedBox(width: 8),
+                          Icon(
+                            _index + 1 >= quiz.questions.length ? Icons.check_rounded : Icons.arrow_forward_rounded,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-              ],
-            ),
+                    ),
+                  ],
+                ),
+            ],
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OptionTile extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback? onTap;
+  const _OptionTile({required this.label, required this.selected, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final bg = selected ? scheme.onSurface : scheme.surface;
+    final fg = selected ? scheme.surface : scheme.onSurface;
+    const double h = 56;
+    return Material(
+      color: bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadius.button,
+        side: BorderSide(color: selected ? scheme.onSurface : scheme.outlineVariant, width: 1.2),
+      ),
+      child: InkWell(
+        borderRadius: AppRadius.button,
+        onTap: onTap,
+        child: SizedBox(
+          height: h,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Centered label
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: fg, fontWeight: FontWeight.w700),
+                ),
+              ),
+              // Selected check dot on the left
+              if (selected)
+                Positioned(
+                  left: 12,
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: const BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.check, size: 14, color: Colors.white),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
