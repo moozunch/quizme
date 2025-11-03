@@ -23,7 +23,7 @@ class AppScaffold extends StatelessWidget {
     this.padding = const EdgeInsets.all(12.0),
     this.includeThemeToggle = true,
     this.withBackground = true,
-    this.seamlessAppBar = true,
+    this.seamlessAppBar = false,
   });
 
   @override

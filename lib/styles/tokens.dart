@@ -17,6 +17,7 @@ class AppRadius {
   static const Radius rLg = Radius.circular(16);
   static const BorderRadius card = BorderRadius.all(rMd);
   static const BorderRadius button = BorderRadius.all(rLg);
+  static const BorderRadius pill = BorderRadius.all(Radius.circular(28));
 }
 
 class AppDurations {

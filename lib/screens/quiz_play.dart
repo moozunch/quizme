@@ -37,6 +37,14 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
       });
     }
   }
+  void _prev() {
+    if (_index > 0) {
+      setState(() {
+        _index--;
+        _selected = null;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,51 +74,78 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(q.text, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                Text(q.text, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: AppSpacing.sm),
                 ...List.generate(q.options.length, (i) {
                   final opt = q.options[i];
                   final isSelected = _selected == i;
-                  final selectedColor = Theme.of(context).colorScheme.primaryContainer;
+                  final scheme = Theme.of(context).colorScheme;
+                  final bg = isSelected ? scheme.secondaryContainer : scheme.surface;
+                  final fg = isSelected ? scheme.onSecondaryContainer : scheme.onSurface;
+                  final letter = String.fromCharCode(65 + i);
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
-                      color: isSelected ? selectedColor : Theme.of(context).colorScheme.surfaceContainerHighest,
-                      borderRadius: AppRadius.card,
+                      color: bg,
+                      borderRadius: AppRadius.button,
+                      border: Border.all(color: isSelected ? scheme.secondary : scheme.outlineVariant, width: 1.2),
                     ),
-                    child: ListTile(
-                      title: Text(opt),
-                      trailing: isSelected ? const Icon(Icons.check_circle, color: Colors.green) : null,
+                    child: InkWell(
+                      borderRadius: AppRadius.button,
                       onTap: _selected == null ? () => _submitAnswer(i, q.correctIndex) : null,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 14,
+                              backgroundColor: isSelected ? scheme.secondary : scheme.surface,
+                              child: Text(letter, style: TextStyle(color: isSelected ? scheme.onSecondary : scheme.onSurface)),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(opt, style: TextStyle(color: fg, fontWeight: FontWeight.w600)),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 }),
                 const SizedBox(height: AppSpacing.md),
                 if (_selected != null)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_index + 1 >= quiz.questions.length) {
-                          final name = widget.participantName;
-                          if (name != null && name.isNotEmpty) {
-                            await context.read<AppState>().addAttempt(
-                                  quiz.id,
-                                  Attempt(name: name, score: _score, total: quiz.questions.length),
-                                );
+                  Row(
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: _prev,
+                        icon: const Icon(Icons.arrow_back),
+                        label: const Text('Previous'),
+                      ),
+                      const Spacer(),
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          if (_index + 1 >= quiz.questions.length) {
+                            final name = widget.participantName;
+                            if (name != null && name.isNotEmpty) {
+                              await context.read<AppState>().addAttempt(
+                                    quiz.id,
+                                    Attempt(name: name, score: _score, total: quiz.questions.length),
+                                  );
+                            }
+                            if (!context.mounted) return;
+                            context.push('/quiz/${quiz.id}/result', extra: {
+                              'score': _score,
+                              'total': quiz.questions.length,
+                              'name': name,
+                            });
+                          } else {
+                            _next(quiz.questions.length);
                           }
-                          if (!context.mounted) return;
-                          context.push('/quiz/${quiz.id}/result', extra: {
-                            'score': _score,
-                            'total': quiz.questions.length,
-                            'name': name,
-                          });
-                        } else {
-                          _next(quiz.questions.length);
-                        }
-                      },
-                      child: Text(_index + 1 >= quiz.questions.length ? 'Finish' : 'Next'),
-                    ),
+                        },
+                        icon: Icon(_index + 1 >= quiz.questions.length ? Icons.check : Icons.arrow_forward),
+                        label: Text(_index + 1 >= quiz.questions.length ? 'Finish' : 'Next'),
+                      ),
+                    ],
                   ),
               ],
             ),

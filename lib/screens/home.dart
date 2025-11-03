@@ -25,16 +25,20 @@ class HomeScreen extends StatelessWidget {
                 subtitle: Text('Coba join dengan kode: QUIZ001'),
               ),
             ),
-            ElevatedButton.icon(
-              onPressed: () => context.push('/create'),
-              icon: const Icon(Icons.create),
-              label: const Text('Create Quiz'),
+            SizedBox(
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () => context.push('/create'),
+                child: const Text('Create Quiz'),
+              ),
             ),
             const SizedBox(height: 8),
-            ElevatedButton.icon(
-              onPressed: () => context.push('/join'),
-              icon: const Icon(Icons.login),
-              label: const Text('Join Quiz'),
+            SizedBox(
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () => context.push('/join'),
+                child: const Text('Join Quiz'),
+              ),
             ),
             const SizedBox(height: 12),
             Expanded(

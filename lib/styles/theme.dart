@@ -52,9 +52,26 @@ ThemeData _baseTheme(ColorScheme scheme, Brightness brightness) {
     ),
 
     inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(borderRadius: AppRadius.card),
-      isDense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs + 2),
+      filled: false,
+      hintStyle: TextStyle(color: scheme.onSurfaceVariant),
+      floatingLabelBehavior: FloatingLabelBehavior.auto,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: AppRadius.card,
+        borderSide: BorderSide(color: scheme.outlineVariant, width: 1.2),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: AppRadius.card,
+        borderSide: BorderSide(color: scheme.outlineVariant, width: 1.2),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: AppRadius.card,
+        borderSide: BorderSide(color: scheme.primary, width: 1.8),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: AppRadius.card,
+        borderSide: BorderSide(color: scheme.error, width: 1.8),
+      ),
     ),
 
     // Buttons
@@ -62,11 +79,11 @@ ThemeData _baseTheme(ColorScheme scheme, Brightness brightness) {
       style: ElevatedButton.styleFrom(
         backgroundColor: scheme.primary,
         foregroundColor: scheme.onPrimary,
-        shape: const StadiumBorder(), // pill shape
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.button),
         elevation: 2,
         shadowColor: Colors.black.withValues(alpha: 0.15),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.sm),
-        minimumSize: const Size(88, 44),
+        minimumSize: const Size(64, 48),
         textStyle: const TextStyle(fontWeight: FontWeight.w700),
       ),
     ),
@@ -87,12 +104,19 @@ ThemeData _baseTheme(ColorScheme scheme, Brightness brightness) {
 
     // Chips (for meta/status)
     chipTheme: ChipThemeData(
-      backgroundColor: scheme.surfaceContainerHighest,
+      backgroundColor: scheme.surface,
+      selectedColor: scheme.secondaryContainer,
       labelStyle: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600),
+      secondaryLabelStyle: TextStyle(color: scheme.onSecondaryContainer, fontWeight: FontWeight.w700),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      shape: const StadiumBorder(),
-      side: BorderSide(color: scheme.outlineVariant, width: 1),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.button,
+        side: BorderSide(color: scheme.outlineVariant, width: 1),
+      ),
       iconTheme: IconThemeData(color: scheme.onSurfaceVariant),
+      selectedShadowColor: scheme.shadow,
+      elevation: 0,
+      pressElevation: 0,
+      showCheckmark: false,
     ),
 
     dividerTheme: DividerThemeData(
