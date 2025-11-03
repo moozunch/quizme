@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../provider/app_state.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/dialogs.dart';
+import '../widgets/section_card.dart';
+import '../widgets/attempt_list.dart';
+import '../styles/tokens.dart';
 
 class QuizDetailScreen extends StatelessWidget {
   final String quizId;
@@ -37,44 +40,69 @@ class QuizDetailScreen extends StatelessWidget {
           },
         ),
       ],
-      body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('ID: ${quiz.id}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            const SizedBox(height: 8),
-            Text('Questions: ${quiz.questions.length}'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                final name = await showNamePrompt(context);
-                if (name != null && context.mounted) {
-                  context.push('/quiz/${quiz.id}/play', extra: name);
-                }
-              },
-              child: const Text('Start Quiz'),
+      body: ListView(
+        children: [
+          SectionCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: AppSpacing.xs,
+                  runSpacing: AppSpacing.xs,
+                  children: [
+                    Chip(label: Text('ID: ${quiz.id}')),
+                    Chip(label: Text('${quiz.questions.length} questions')),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Get ready to start this quiz',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                ElevatedButton(
+                  onPressed: () async {
+                    final name = await showNamePrompt(context);
+                    if (name != null && context.mounted) {
+                      context.push('/quiz/${quiz.id}/play', extra: name);
+                    }
+                  },
+                  child: const Text('Start Quiz'),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            const Text('Preview:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Expanded(
-              child: ListView(
-                children: [
-                  ...List.generate(quiz.questions.length, (i) => ListTile(
-                        title: Text(quiz.questions[i].text),
-                        subtitle: Text('Options: ${quiz.questions[i].options.join(', ')}'),
-                      )),
-                  const SizedBox(height: 12),
-                  const Divider(),
-                  const Text('Attempts', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ...quiz.attempts.map((a) => ListTile(
-                        title: Text(a.name),
-                        subtitle: Text('${a.score}/${a.total}'),
-                        trailing: Text('${a.submittedAt.hour.toString().padLeft(2, '0')}:${a.submittedAt.minute.toString().padLeft(2, '0')}'),
-                      )),
-                ],
-              ),
+          ),
+
+          SectionCard(
+            title: 'Preview',
+            child: Column(
+              children: [
+                ...List.generate(
+                  quiz.questions.length,
+                  (i) => Container(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: AppRadius.card,
+                    ),
+                    child: ListTile(
+                      title: Text(quiz.questions[i].text),
+                      subtitle: Text('Options: ${quiz.questions[i].options.join(', ')}'),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
+
+          SectionCard(
+            title: 'Attempts',
+            child: SizedBox(
+              height: 220,
+              child: AttemptList(quizId: quiz.id),
+            ),
+          ),
+        ],
       ),
     );
   }

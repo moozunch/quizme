@@ -10,6 +10,7 @@ import 'screens/quiz_detail.dart';
 import 'screens/quiz_play.dart';
 import 'screens/quiz_created.dart';
 import 'screens/quiz_result.dart';
+import 'styles/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   final AppState appState;
   MyApp({super.key, AppState? appState}) : appState = appState ?? AppState();
+  
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,7 @@ class MyApp extends StatelessWidget {
           final id = state.pathParameters['id']!;
           return QuizCreatedScreen(quizId: id);
         }),
+          
         GoRoute(path: '/quiz/:id/result', builder: (context, state) {
           final id = state.pathParameters['id']!;
           final extras = state.extra as Map<String, dynamic>?;
@@ -58,19 +61,10 @@ class MyApp extends StatelessWidget {
       child: Consumer<AppState>(
         builder: (context, state, _) {
           return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
             title: 'QuizMe',
-            theme: ThemeData(
-              brightness: Brightness.light,
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-              useMaterial3: true,
-              fontFamily: 'PlusJakartaSans',
-            ),
-            darkTheme: ThemeData(
-              brightness: Brightness.dark,
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
-              useMaterial3: true,
-              fontFamily: 'PlusJakartaSans',
-            ),
+            theme: buildLightTheme(),
+            darkTheme: buildDarkTheme(),
             themeMode: state.themeMode,
             routerConfig: router,
           );

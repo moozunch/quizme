@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../provider/app_state.dart';
 import '../widgets/app_scaffold.dart';
+import '../widgets/result_celebration.dart';
+import '../widgets/dialogs.dart';
 
 class QuizResultScreen extends StatelessWidget {
   final String quizId;
@@ -28,41 +30,17 @@ class QuizResultScreen extends StatelessWidget {
       child: AppScaffold(
         titleText: 'Result',
         padding: const EdgeInsets.all(16),
-        body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(quiz?.title ?? 'Quiz', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 8),
-              Text('Nama: $name'),
-              const SizedBox(height: 16),
-              Center(
-                child: Column(
-                  children: [
-                    Text('$score / $total', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    LinearProgressIndicator(value: total == 0 ? 0 : score / total),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              FilledButton.icon(
-                onPressed: () => context.go('/'),
-                icon: const Icon(Icons.home),
-                label: const Text('Kembali ke Home'),
-              ),
-              const SizedBox(height: 8),
-              OutlinedButton.icon(
-                onPressed: () => context.push('/quiz/$quizId'),
-                icon: const Icon(Icons.visibility),
-                label: const Text('Lihat Detail & Attempts'),
-              ),
-              const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: () => context.push('/quiz/$quizId/play', extra: name),
-                icon: const Icon(Icons.refresh),
-                label: const Text('Main lagi'),
-              ),
-            ],
+        body: ResultCelebration(
+          title: 'Congrats! The quiz is done',
+          caption: "Hopefully, the results are satisfying and provide new insights.",
+          score: score,
+          total: total,
+          onHome: () => context.go('/'),
+          onDetail: () => context.push('/quiz/$quizId'),
+          onShare: () async {
+            final text = '${quiz?.title ?? 'Quiz'}\n$name: $score/$total';
+            await copyToClipboard(context, text, snack: 'Result copied');
+          },
         ),
       ),
     );
