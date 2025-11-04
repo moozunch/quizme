@@ -58,8 +58,9 @@ class _JoinQuizScreenState extends State<JoinQuizScreen> {
               onSelectionChanged: (s) => setState(() => _mode = s.first),
               showSelectedIcon: false,
               style: ButtonStyle(
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(borderRadius: AppRadius.button)),
+                shape: WidgetStatePropertyAll<OutlinedBorder>(
+                  RoundedRectangleBorder(borderRadius: AppRadius.button),
+                ),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),

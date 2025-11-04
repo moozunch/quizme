@@ -26,30 +26,18 @@ class AppDurations {
   static const slow = Duration(milliseconds: 300);
 }
 
-class AppSeeds {
-  // Main brand seed color
-  static const Color seed = Color(0xFF065750); // rgb(6,87,80)
-}
-
 /// Centralized color palette in HEX for easy tweak.
 class AppPalette {
   // Brand seeds 
   static const Color lightSeed = Color(0xFF065750); // rgb(6,87,80)
   static const Color darkSeed = Color(0xFF065750); // same seed for dark; scheme adjusts via brightness
 
-  // Optional accents used by custom widgets (e.g., decorative blobs)
   static const Color accentPrimary = Color.fromARGB(244, 90, 120, 177); 
-  static const Color accentSecondary = Color.fromARGB(244, 90, 177, 97); // #4D77FF
-  static const Color accentTertiary = Color.fromARGB(244, 177, 90, 134); // #FF6EC7
-
-  // Neutral surfaces (if needed outside ColorScheme)
-  static const Color surfaceLight = Color(0xFFF7F7FA); // #F7F7FA
-  static const Color surfaceLightAlt = Color(0xFFEFEFF6); // #EFEFF6
-  static const Color surfaceDark = Color(0xFF0E0F15); // #0E0F15
-  static const Color surfaceDarkAlt = Color(0xFF171A2A); // #171A2A
+  static const Color accentSecondary = Color.fromARGB(244, 90, 177, 97); 
+  static const Color accentTertiary = Color.fromARGB(244, 177, 90, 134); 
 }
 
-/// Palette for card backgrounds (pastel / muted tones). Edit HEX values to change look.
+/// Palette for card backgrounds (pastel / muted tones). 
 class CardPalette {
   static const List<Color> colors = [
     AppPalette.accentPrimary, 

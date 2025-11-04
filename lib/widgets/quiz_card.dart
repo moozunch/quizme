@@ -6,7 +6,6 @@ import '../models/quiz.dart';
 import '../provider/app_state.dart';
 import '../styles/tokens.dart';
 import 'dialogs.dart';
-// import 'illustration_placeholder.dart';
 
 class QuizCard extends StatelessWidget {
   final Quiz quiz;
