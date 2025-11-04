@@ -10,9 +10,8 @@ class Quiz {
   Quiz({required this.id, required this.title, required this.questions, List<Attempt>? attempts})
       : attempts = attempts ?? <Attempt>[];
 
-  factory Quiz.create({required String title, required List<Question> questions}) {
-    final id = DateTime.now().millisecondsSinceEpoch.toString();
-  return Quiz(id: id, title: title, questions: questions, attempts: []);
+  factory Quiz.create({required String id, required String title, required List<Question> questions}) {
+    return Quiz(id: id, title: title, questions: questions, attempts: []);
   }
 
   factory Quiz.fromJson(Map<String, dynamic> j) => Quiz(

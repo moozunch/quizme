@@ -27,14 +27,15 @@ class AppDurations {
 }
 
 class AppSeeds {
-  static const Color seed = Color.fromARGB(100, 30, 61, 161); // default fallback
+  // Main brand seed color
+  static const Color seed = Color(0xFF065750); // rgb(6,87,80)
 }
 
 /// Centralized color palette in HEX for easy tweak.
 class AppPalette {
   // Brand seeds 
-  static const Color lightSeed = Color.fromARGB(100, 30, 61, 161); // #252E53
-  static const Color darkSeed = Color.fromARGB(100, 30, 61, 161); // #111955
+  static const Color lightSeed = Color(0xFF065750); // rgb(6,87,80)
+  static const Color darkSeed = Color(0xFF065750); // same seed for dark; scheme adjusts via brightness
 
   // Optional accents used by custom widgets (e.g., decorative blobs)
   static const Color accentPrimary = Color.fromARGB(244, 90, 120, 177); 

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/quiz.dart';
 import '../models/question.dart';
 import '../models/attempt.dart';
+import '../utils/id.dart';
 
 class AppState extends ChangeNotifier {
   static const _kQuizzesKey = 'quizzes_v1';
@@ -53,7 +54,15 @@ class AppState extends ChangeNotifier {
   }
 
   Future<String> addQuiz(String title, List<Question> questions) async {
-    final quiz = Quiz.create(title: title, questions: questions);
+    // Generate a unique 6-digit code; retry a few times if collision occurs.
+    String id;
+    int attempts = 0;
+    do {
+      id = generateQuizCode();
+      attempts++;
+    } while (_quizzes.any((q) => q.id == id) && attempts < 10);
+
+    final quiz = Quiz.create(id: id, title: title, questions: questions);
     _quizzes.add(quiz);
     await _save();
     notifyListeners();
@@ -78,7 +87,7 @@ class AppState extends ChangeNotifier {
 
   void _seedDemo() {
     final demo = Quiz(
-      id: 'QUIZ001',
+      id: generateQuizCode(),
       title: 'General Knowledge Demo',
       questions: [
         Question(

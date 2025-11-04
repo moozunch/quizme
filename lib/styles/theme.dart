@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'tokens.dart';
 
 ThemeData buildLightTheme() {
-  final scheme = ColorScheme.fromSeed(seedColor: const Color.fromARGB(100, 30, 61, 161));
+  final scheme = ColorScheme.fromSeed(seedColor: AppPalette.lightSeed);
   return _baseTheme(scheme, Brightness.light);
 }
 
 ThemeData buildDarkTheme() {
-  final scheme = ColorScheme.fromSeed(seedColor: const Color.fromARGB(99, 40, 75, 190), brightness: Brightness.dark);
+  final scheme = ColorScheme.fromSeed(seedColor: AppPalette.darkSeed, brightness: Brightness.dark);
   return _baseTheme(scheme, Brightness.dark);
 }
 
