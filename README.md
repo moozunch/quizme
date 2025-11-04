@@ -72,7 +72,6 @@ assets/
 		<td><img src="docs/screenshots/preview.jpg" alt="Preview" width="200" /></td>
 		<td><img src="docs/screenshots/play.jpg" alt="Play" width="200" /></td>
 		<td><img src="docs/screenshots/result.jpg" alt="Result" width="200" /></td>
-		<td></td>
 	</tr>
 </table>
 
