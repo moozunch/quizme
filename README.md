@@ -62,12 +62,19 @@ assets/
 
 ## Screenshots
 
-![Home](docs/screenshots/home.jpg)
-![Create](docs/screenshots/create.jpg)
-![Join](docs/screenshots/join.jpg)
-![preview](docs/screenshots/preview.jpg)
-![Play](docs/screenshots/play.jpg)
-![Result](docs/screenshots/result.jpg)
+<table>
+	<tr>
+		<td><img src="docs/screenshots/home.jpg" alt="Home" width="200" /></td>
+		<td><img src="docs/screenshots/create.jpg" alt="Create" width="200" /></td>
+		<td><img src="docs/screenshots/join.jpg" alt="Join" width="200" /></td>
+	</tr>
+	<tr>
+		<td><img src="docs/screenshots/preview.jpg" alt="Preview" width="200" /></td>
+		<td><img src="docs/screenshots/play.jpg" alt="Play" width="200" /></td>
+		<td><img src="docs/screenshots/result.jpg" alt="Result" width="200" /></td>
+		<td></td>
+	</tr>
+</table>
 
 ## Routing
 
